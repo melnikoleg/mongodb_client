@@ -73,7 +73,7 @@ class Ui_MainWindow(object):
         self.DeleteButton.setText(_translate("MainWindow", "Delete"))
         self.EditButton.setText(_translate("MainWindow", "Edit"))
         self.ConnectButton.setText(_translate("MainWindow", "Connect"))
-        self.comboBox.setItemText(0, _translate("MainWindow", "192.168.1.230"))
+        self.comboBox.setItemText(0, _translate("MainWindow", "192.168.1.229"))
         self.comboBox.setItemText(1, _translate("MainWindow", "localhost"))
         self.comboBox.setItemText(2, _translate("MainWindow", "192.168.1.37"))
         self.ExitButton.setText(_translate("MainWindow", "Exit"))

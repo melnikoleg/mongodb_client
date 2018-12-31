@@ -38,7 +38,7 @@ class InputDialog(QtWidgets.QDialog, dialoginput.Ui_DialogInput):
 
         self.lineEdit_PathToModel.setText(model_id)
         self.lineEdit_PathToDraw.setText(draw_id)
-        self.OKButton.setEnabled(False)
+        # self.OKButton.setEnabled(False)
 
     def edit(self):
         self.editlabel = True
@@ -147,13 +147,19 @@ class MainApp(QtWidgets.QMainWindow, design.Ui_MainWindow):
 
         print(sender.objectName())
         if sender.objectName() == "EditButton" or sender.objectName() == "tableWidget":
+
             if sender.objectName() == "EditButton":
                 win.edit()
                 win.Edit_Button.setVisible(False)
-            win.Edit_Button.setVisible(True)
+                win.OKButton.setEnabled(True)
+            else:
+                win.Edit_Button.setVisible(True)
+                win.OKButton.setEnabled(False)
+
             win.show_data(self.tableWidget.selectedItems()[1].text(), self.tableWidget.selectedItems()[2].text(),
                           self.tableWidget.selectedItems()[3].text(), self.tableWidget.selectedItems()[4].text(),
                           self.tableWidget.selectedItems()[0].text())
+
         elif sender.objectName() == "AddButton":
             win.edit()
             win.Edit_Button.setVisible(False)
