@@ -1,5 +1,7 @@
 import sys  # sys нужен для передачи argv в QApplication
 import os
+import threading
+
 from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QTableWidget, QTableWidgetItem, QFileDialog, QMainWindow, QApplication, QDialog, QComboBox
 from pymongo import MongoClient
@@ -9,6 +11,7 @@ import dialoginput
 import gridfs
 from bson.objectid import ObjectId
 from pdf2image import convert_from_path
+import requests
 
 
 class InputDialog(QtWidgets.QDialog, dialoginput.Ui_DialogInput):
@@ -92,6 +95,13 @@ class MainApp(QtWidgets.QMainWindow, design.Ui_MainWindow):
 
         self.tableWidget.doubleClicked.connect(self.showInputDialog)
 
+    def thread(func):
+        def wrapper(*args, **kwargs):
+            my_thread = threading.Thread(target=func, args=args, kwargs=kwargs)
+            my_thread.start()
+
+        return wrapper
+
     def connect(self):
         var = self.comboBox.currentText()
         try:
@@ -100,6 +110,8 @@ class MainApp(QtWidgets.QMainWindow, design.Ui_MainWindow):
 
             self.db = self.conn["Parts"]
             self.coll = self.db["Part"]
+            self.fs = gridfs.GridFS(self.db)
+            self.fss = gridfs.GridFSBucket(self.db)
             self.showDB()
             self.statusBar.showMessage("Connected")
         except errors.ServerSelectionTimeoutError as err:
@@ -122,9 +134,10 @@ class MainApp(QtWidgets.QMainWindow, design.Ui_MainWindow):
         # Create table
         self.tableWidget = self.tableWidget
 
-        self.tableWidget.setColumnCount(7)
+        self.tableWidget.setColumnCount(9)
         self.tableWidget.setHorizontalHeaderLabels(
-            ["id", "Name", "Designation", "Draw_img", "3d_model", 'draw_id_img', 'draw_id_img_preview'])
+            ["id", "Name", "Designation", "Draw_img", "3d_model", 'draw_id_img', 'draw_id_img_preview', 'count',
+             'stack'])
 
         # self.tableWidget.font()
         # self.tableWidget.move(0, 0)
@@ -134,7 +147,13 @@ class MainApp(QtWidgets.QMainWindow, design.Ui_MainWindow):
 
             id = self.tableWidget.selectedItems()[0].text()
             # print(id)
-            self.coll.remove({'_id': ObjectId(id)})
+            doc = self.coll.find_one({'_id': ObjectId(id)})
+            self.fs.delete(doc['3d_model'])
+            self.fs.delete(doc['Draw_img'])
+            self.fs.delete(doc['draw_id_img'])
+            self.fs.delete(doc['draw_id_img_preview'])
+            self.coll.remove()
+
             self.showDB()
         except IndexError as err:
             self.statusBar.showMessage("Error: Choose a row for delete")
@@ -166,14 +185,18 @@ class MainApp(QtWidgets.QMainWindow, design.Ui_MainWindow):
 
         win.exec()
 
+    @thread
     def sendTobase(self, name, designation, path_model, path_draw, id):
         print(id)
 
         fss = gridfs.GridFSBucket(self.db)
 
+
         def upload_to_gridfs(path):
+
             try:
                 with open(path, 'rb') as f:
+
                     file_id = fss.upload_from_stream(os.path.split(path)[-1], f.read())
 
                 return file_id
@@ -204,10 +227,19 @@ class MainApp(QtWidgets.QMainWindow, design.Ui_MainWindow):
                 self.coll.update({'_id': id}, {'$set': {'3d_model': str(model_id)}})
 
         if id == None:
-            self.coll.insert(
+            id_doc = self.coll.insert(
                 {'Name': str(name), '3d_model': str(model_id), 'Designation': str(designation),
                  'Draw_img': str(draw_id),
                  'draw_id_img': str(draw_id_img), 'draw_id_img_preview': draw_id_img_preview})
+            print(id_doc)
+
+            data = str(id_doc)
+
+            server_ip = 'http://192.168.1.4:5000/events'
+            headers = {'Content-Type': 'application/json'}
+
+            requests.post(server_ip, json=str(data))
+
 
         else:
             self.coll.update({'_id': ObjectId(id)}, {'$set': {'Name': str(name), 'Designation': str(designation)}})
