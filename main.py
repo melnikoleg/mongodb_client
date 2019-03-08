@@ -1,21 +1,21 @@
+import json
 import sys  # sys нужен для передачи argv в QApplication
 import os
 import threading
 
 from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QTableWidget, QTableWidgetItem, QFileDialog, QMainWindow, QApplication, QDialog, QComboBox
-from pymongo import MongoClient
-from pymongo import errors
+
 import design  # конвертированный файл дизайна
 import dialoginput
-import gridfs
+
 from bson.objectid import ObjectId
 from pdf2image import convert_from_path
 import requests
 
 
 class InputDialog(QtWidgets.QDialog, dialoginput.Ui_DialogInput):
-    def __init__(self, db, coll, tableWidget):
+    def __init__(self, tableWidget):
         super().__init__()
         self.setupUi(self)
         self.setWindowTitle("Dialog input part")
@@ -28,8 +28,6 @@ class InputDialog(QtWidgets.QDialog, dialoginput.Ui_DialogInput):
         self.OKButton.clicked.connect(self.sendTobase)
         self.Cancel_Button.clicked.connect(self.close)
 
-        self.db = db
-        self.coll = coll
         self.tableWidget = tableWidget
         self.id = None
 
@@ -84,12 +82,13 @@ class MainApp(QtWidgets.QMainWindow, design.Ui_MainWindow):
         super().__init__()
         self.setupUi(self)  # Это нужно для инициализации нашего дизайна
         self.createTable()
+        self.data = requests.get('http://192.168.1.4:5000/show_db').json()
 
         # self.deleteSelected.clicked.connect(self.delete_doc)  # Выполнить функцию
-
+        self.showDB()
         self.AddButton.clicked.connect(self.showInputDialog)  # Выполнить функцию
         self.EditButton.clicked.connect(self.showInputDialog)  # Выполнить функцию
-        self.ConnectButton.clicked.connect(self.connect)
+        # self.ConnectButton.clicked.connect(self.connect)
         self.ExitButton.clicked.connect(self.close)
         self.DeleteButton.clicked.connect(self.delete_doc)  # Выполнить функцию
 
@@ -102,28 +101,14 @@ class MainApp(QtWidgets.QMainWindow, design.Ui_MainWindow):
 
         return wrapper
 
-    def connect(self):
-        var = self.comboBox.currentText()
-        try:
-            self.conn = MongoClient(host=var, port=27017, serverSelectionTimeoutMS=1)
-            self.conn.server_info()
-
-            self.db = self.conn["Parts"]
-            self.coll = self.db["Part"]
-            self.fs = gridfs.GridFS(self.db)
-            self.fss = gridfs.GridFSBucket(self.db)
-            self.showDB()
-            self.statusBar.showMessage("Connected")
-        except errors.ServerSelectionTimeoutError as err:
-            # do whatever you need
-            self.statusBar.showMessage(str(err))
-
     def showDB(self):
-        self.tableWidget.setRowCount(self.coll.count())
-        for doc, i in zip(self.coll.find(), range(self.coll.count())):
-            # print(i)
-            self.tableWidget.setItem(i, 0, QTableWidgetItem(str(doc['_id'])))
-            self.tableWidget.setItem(i, 1, QTableWidgetItem(str(doc['Name'])))
+        count = len(self.data["cursor"])
+        self.tableWidget.setRowCount(count)
+
+        for doc, i in zip(self.data["cursor"], range(count)):
+            print(i)
+            self.tableWidget.setItem(i, 0, QTableWidgetItem(str(doc['_id']['$oid'])))
+            self.tableWidget.setItem(i, 1, QTableWidgetItem(str(doc["Name"])))
             self.tableWidget.setItem(i, 2, QTableWidgetItem(str(doc['Designation'])))
             self.tableWidget.setItem(i, 3, QTableWidgetItem(str(doc['Draw_img'])))
             self.tableWidget.setItem(i, 4, QTableWidgetItem(str(doc['3d_model'])))
@@ -162,7 +147,7 @@ class MainApp(QtWidgets.QMainWindow, design.Ui_MainWindow):
     def showInputDialog(self):
         sender = self.sender()
 
-        win = InputDialog(self.db, self.coll, self.tableWidget)
+        win = InputDialog(self.tableWidget)
 
         print(sender.objectName())
         if sender.objectName() == "EditButton" or sender.objectName() == "tableWidget":
@@ -187,21 +172,6 @@ class MainApp(QtWidgets.QMainWindow, design.Ui_MainWindow):
 
     @thread
     def sendTobase(self, name, designation, path_model, path_draw, id):
-        print(id)
-
-        fss = gridfs.GridFSBucket(self.db)
-
-
-        def upload_to_gridfs(path):
-
-            try:
-                with open(path, 'rb') as f:
-
-                    file_id = fss.upload_from_stream(os.path.split(path)[-1], f.read())
-
-                return file_id
-            except FileNotFoundError as err:
-                self.statusBar.showMessage("No file selected")
 
         def pdfToimg(pdf_path):
             pages = convert_from_path(pdf_path, 200)
@@ -209,42 +179,20 @@ class MainApp(QtWidgets.QMainWindow, design.Ui_MainWindow):
             pages = convert_from_path(pdf_path, 10)
             pages[0].save('/home/oleg/PycharmProjects/QT/tmp/out2.jpg', 'JPEG')
 
-        if path_draw.startswith('/'):
+        pdfToimg(path_draw)
 
-            pdfToimg(path_draw)
-
-            draw_id = upload_to_gridfs(path_draw)
-            draw_id_img = upload_to_gridfs("/home/oleg/PycharmProjects/QT/tmp/out.jpg")
-            draw_id_img_preview = upload_to_gridfs("/home/oleg/PycharmProjects/QT/tmp/out2.jpg")
-
-            if id != None:
-                self.coll.update({'_id': id}, {'$set': {'Draw_img': str(draw_id), 'draw_id_img': str(draw_id_img),
-                                                        'draw_id_img_preview': draw_id_img_preview}})
-
-        if path_model.startswith('/'):
-            model_id = upload_to_gridfs(path_model)
-            if id != None:
-                self.coll.update({'_id': id}, {'$set': {'3d_model': str(model_id)}})
-
-        if id == None:
-            id_doc = self.coll.insert(
-                {'Name': str(name), '3d_model': str(model_id), 'Designation': str(designation),
-                 'Draw_img': str(draw_id),
-                 'draw_id_img': str(draw_id_img), 'draw_id_img_preview': draw_id_img_preview})
-            print(id_doc)
-
-            data = str(id_doc)
-
-            server_ip = 'http://192.168.1.4:5000/events'
-            headers = {'Content-Type': 'application/json'}
-
-            requests.post(server_ip, json=str(data))
-
-
-        else:
-            self.coll.update({'_id': ObjectId(id)}, {'$set': {'Name': str(name), 'Designation': str(designation)}})
-
-        MainApp.showDB(self)
+        data = {'file_model': (os.path.basename(path_model), open(path_model, 'rb'), 'application/octet-stream'),
+                'file_draw': (os.path.basename(path_draw), open(path_draw, 'rb'), 'application/octet-stream'),
+                'draw_img': (os.path.basename('/home/oleg/PycharmProjects/QT/tmp/out.jpg'),
+                             open('/home/oleg/PycharmProjects/QT/tmp/out.jpg', 'rb'), 'application/octet-stream'),
+                'draw_img_preview': (os.path.basename('/home/oleg/PycharmProjects/QT/tmp/out2.jpg'),
+                                     open('/home/oleg/PycharmProjects/QT/tmp/out2.jpg', 'rb'),
+                                     'application/octet-stream'),
+                'data': ('data', json.dumps(dict({'name': name, 'designation': designation})), 'application/json'),
+                }
+        r = requests.post('http://192.168.1.4:5000/add_part', files=data)
+        if r == 'OK':
+            self.showDB()
 
 
 def main():
