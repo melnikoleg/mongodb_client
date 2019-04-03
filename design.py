@@ -11,11 +11,11 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(841, 612)
+        MainWindow.resize(840, 612)
         self.centralWidget = QtWidgets.QWidget(MainWindow)
         self.centralWidget.setObjectName("centralWidget")
         self.AddButton = QtWidgets.QPushButton(self.centralWidget)
-        self.AddButton.setGeometry(QtCore.QRect(40, 30, 101, 41))
+        self.AddButton.setGeometry(QtCore.QRect(40, 30, 100 ,40))
         self.AddButton.setObjectName("AddButton")
         self.DeleteButton = QtWidgets.QPushButton(self.centralWidget)
         self.DeleteButton.setGeometry(QtCore.QRect(160, 30, 101, 41))
@@ -23,11 +23,9 @@ class Ui_MainWindow(object):
         self.EditButton = QtWidgets.QPushButton(self.centralWidget)
         self.EditButton.setGeometry(QtCore.QRect(280, 30, 101, 41))
         self.EditButton.setObjectName("EditButton")
-        self.ConnectButton = QtWidgets.QPushButton(self.centralWidget)
-        self.ConnectButton.setGeometry(QtCore.QRect(710, 50, 101, 41))
-        self.ConnectButton.setObjectName("ConnectButton")
+
         self.tableWidget = QtWidgets.QTableWidget(self.centralWidget)
-        self.tableWidget.setGeometry(QtCore.QRect(20, 170, 791, 381))
+        self.tableWidget.setGeometry(QtCore.QRect(20, 90, 790, 300))
         self.tableWidget.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
         self.tableWidget.setMidLineWidth(-1)
         self.tableWidget.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
@@ -37,18 +35,12 @@ class Ui_MainWindow(object):
         self.tableWidget.setObjectName("tableWidget")
         self.tableWidget.setColumnCount(0)
         self.tableWidget.setRowCount(0)
-        self.comboBox = QtWidgets.QComboBox(self.centralWidget)
-        self.comboBox.setGeometry(QtCore.QRect(670, 20, 141, 22))
-        self.comboBox.setMaximumSize(QtCore.QSize(141, 16777215))
+
         font = QtGui.QFont()
         font.setKerning(False)
-        self.comboBox.setFont(font)
-        self.comboBox.setObjectName("comboBox")
-        self.comboBox.addItem("")
-        self.comboBox.addItem("")
-        self.comboBox.addItem("")
+
         self.ExitButton = QtWidgets.QPushButton(self.centralWidget)
-        self.ExitButton.setGeometry(QtCore.QRect(710, 110, 101, 41))
+        self.ExitButton.setGeometry(QtCore.QRect(710, 30, 101, 41))
         self.ExitButton.setObjectName("ExitButton")
         MainWindow.setCentralWidget(self.centralWidget)
         self.menuBar = QtWidgets.QMenuBar(MainWindow)
@@ -72,9 +64,7 @@ class Ui_MainWindow(object):
         self.AddButton.setText(_translate("MainWindow", "Add"))
         self.DeleteButton.setText(_translate("MainWindow", "Delete"))
         self.EditButton.setText(_translate("MainWindow", "Edit"))
-        self.ConnectButton.setText(_translate("MainWindow", "Connect"))
-        self.comboBox.setItemText(0, _translate("MainWindow", "192.168.1.229"))
-        self.comboBox.setItemText(1, _translate("MainWindow", "localhost"))
-        self.comboBox.setItemText(2, _translate("MainWindow", "192.168.1.242"))
+
+
         self.ExitButton.setText(_translate("MainWindow", "Exit"))
 

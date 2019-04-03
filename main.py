@@ -9,8 +9,8 @@ from PyQt5.QtWidgets import QTableWidget, QTableWidgetItem, QFileDialog, QMainWi
 import design  # конвертированный файл дизайна
 import dialoginput
 
-from bson.objectid import ObjectId
-from pdf2image import convert_from_path
+
+#from pdf2image import convert_from_path
 import requests
 
 
@@ -132,7 +132,7 @@ class MainApp(QtWidgets.QMainWindow, design.Ui_MainWindow):
 
             id = self.tableWidget.selectedItems()[0].text()
             # print(id)
-            doc = self.coll.find_one({'_id': ObjectId(id)})
+            doc = self.coll.find_one({'_id': id})
             self.fs.delete(doc['3d_model'])
             self.fs.delete(doc['Draw_img'])
             self.fs.delete(doc['draw_id_img'])
