@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>624</width>
-    <height>337</height>
+    <height>394</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -29,7 +29,7 @@
   <widget class="QLineEdit" name="lineEdit_Name">
    <property name="geometry">
     <rect>
-     <x>150</x>
+     <x>190</x>
      <y>60</y>
      <width>301</width>
      <height>21</height>
@@ -58,7 +58,7 @@
   <widget class="QLineEdit" name="lineEdit_Designation">
    <property name="geometry">
     <rect>
-     <x>150</x>
+     <x>190</x>
      <y>100</y>
      <width>301</width>
      <height>21</height>
@@ -84,7 +84,7 @@
   <widget class="QLineEdit" name="lineEdit_PathToDraw">
    <property name="geometry">
     <rect>
-     <x>150</x>
+     <x>190</x>
      <y>140</y>
      <width>301</width>
      <height>21</height>
@@ -113,7 +113,7 @@
   <widget class="QLineEdit" name="lineEdit_PathToModel">
    <property name="geometry">
     <rect>
-     <x>150</x>
+     <x>190</x>
      <y>180</y>
      <width>301</width>
      <height>21</height>
@@ -132,7 +132,7 @@
    </property>
    <property name="geometry">
     <rect>
-     <x>460</x>
+     <x>500</x>
      <y>140</y>
      <width>28</width>
      <height>21</height>
@@ -148,7 +148,7 @@
    </property>
    <property name="geometry">
     <rect>
-     <x>460</x>
+     <x>500</x>
      <y>180</y>
      <width>28</width>
      <height>21</height>
@@ -162,7 +162,7 @@
    <property name="geometry">
     <rect>
      <x>400</x>
-     <y>251</y>
+     <y>320</y>
      <width>91</width>
      <height>41</height>
     </rect>
@@ -174,8 +174,8 @@
   <widget class="QPushButton" name="OKButton">
    <property name="geometry">
     <rect>
-     <x>279</x>
-     <y>251</y>
+     <x>280</x>
+     <y>320</y>
      <width>91</width>
      <height>41</height>
     </rect>
@@ -195,6 +195,35 @@
    </property>
    <property name="text">
     <string>Edit</string>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="lineEdit_Information">
+   <property name="geometry">
+    <rect>
+     <x>190</x>
+     <y>220</y>
+     <width>301</width>
+     <height>91</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+   <property name="readOnly">
+    <bool>true</bool>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_5">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>220</y>
+     <width>151</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Additional information</string>
    </property>
   </widget>
  </widget>

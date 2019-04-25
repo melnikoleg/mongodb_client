@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>841</width>
-    <height>612</height>
+    <height>520</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,7 +17,7 @@
    <widget class="QPushButton" name="AddButton">
     <property name="geometry">
      <rect>
-      <x>40</x>
+      <x>20</x>
       <y>30</y>
       <width>101</width>
       <height>41</height>
@@ -30,7 +30,7 @@
    <widget class="QPushButton" name="DeleteButton">
     <property name="geometry">
      <rect>
-      <x>160</x>
+      <x>260</x>
       <y>30</y>
       <width>101</width>
       <height>41</height>
@@ -43,7 +43,7 @@
    <widget class="QPushButton" name="EditButton">
     <property name="geometry">
      <rect>
-      <x>280</x>
+      <x>140</x>
       <y>30</y>
       <width>101</width>
       <height>41</height>
@@ -53,26 +53,13 @@
      <string>Edit</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="ConnectButton">
-    <property name="geometry">
-     <rect>
-      <x>710</x>
-      <y>50</y>
-      <width>101</width>
-      <height>41</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Connect</string>
-    </property>
-   </widget>
    <widget class="QTableWidget" name="tableWidget">
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>170</y>
+      <y>100</y>
       <width>791</width>
-      <height>381</height>
+      <height>331</height>
      </rect>
     </property>
     <property name="contextMenuPolicy">
@@ -93,40 +80,274 @@
     <property name="horizontalScrollMode">
      <enum>QAbstractItemView::ScrollPerPixel</enum>
     </property>
-   </widget>
-   <widget class="QComboBox" name="comboBox">
-    <property name="geometry">
-     <rect>
-      <x>670</x>
-      <y>20</y>
-      <width>141</width>
-      <height>22</height>
-     </rect>
-    </property>
-    <property name="maximumSize">
-     <size>
-      <width>141</width>
-      <height>16777215</height>
-     </size>
-    </property>
-    <property name="font">
-     <font>
-      <kerning>false</kerning>
-     </font>
-    </property>
-    <item>
+    <row>
      <property name="text">
-      <string>192.168.1.230</string>
+      <string>1</string>
+     </property>
+    </row>
+    <row>
+     <property name="text">
+      <string>2</string>
+     </property>
+    </row>
+    <row>
+     <property name="text">
+      <string>3</string>
+     </property>
+    </row>
+    <row>
+     <property name="text">
+      <string>4</string>
+     </property>
+    </row>
+    <row>
+     <property name="text">
+      <string>5</string>
+     </property>
+    </row>
+    <row>
+     <property name="text">
+      <string>6</string>
+     </property>
+    </row>
+    <row>
+     <property name="text">
+      <string>7</string>
+     </property>
+    </row>
+    <row>
+     <property name="text">
+      <string>8</string>
+     </property>
+    </row>
+    <row>
+     <property name="text">
+      <string>9</string>
+     </property>
+    </row>
+    <row>
+     <property name="text">
+      <string>10</string>
+     </property>
+    </row>
+    <column>
+     <property name="text">
+      <string>id</string>
+     </property>
+    </column>
+    <column>
+     <property name="text">
+      <string>New Column</string>
+     </property>
+    </column>
+    <column>
+     <property name="text">
+      <string>Designation</string>
+     </property>
+    </column>
+    <column>
+     <property name="text">
+      <string>Information</string>
+     </property>
+    </column>
+    <item row="0" column="0">
+     <property name="text">
+      <string>5ca4f9d6410d6c1dfcc7a599</string>
      </property>
     </item>
-    <item>
+    <item row="0" column="1">
      <property name="text">
-      <string>localhost</string>
+      <string>Spur gear</string>
      </property>
     </item>
-    <item>
+    <item row="0" column="2">
      <property name="text">
-      <string>192.168.1.37</string>
+      <string>001</string>
+     </property>
+    </item>
+    <item row="0" column="3">
+     <property name="text">
+      <string>Корпус-зубчатое колесо волнового редуктора</string>
+     </property>
+    </item>
+    <item row="1" column="0">
+     <property name="text">
+      <string>5ca4ecb7410d6c1a9c6a80ea</string>
+     </property>
+    </item>
+    <item row="1" column="1">
+     <property name="text">
+      <string>Spur pinion</string>
+     </property>
+    </item>
+    <item row="1" column="2">
+     <property name="text">
+      <string>002</string>
+     </property>
+    </item>
+    <item row="1" column="3">
+     <property name="text">
+      <string>Гибкий зубчатый элемент</string>
+     </property>
+    </item>
+    <item row="2" column="0">
+     <property name="text">
+      <string>5ty4dfcc7c1dfc</string>
+     </property>
+    </item>
+    <item row="2" column="1">
+     <property name="text">
+      <string>Plate reductor</string>
+     </property>
+    </item>
+    <item row="2" column="2">
+     <property name="text">
+      <string>003</string>
+     </property>
+    </item>
+    <item row="2" column="3">
+     <property name="text">
+      <string>Крышка корпуса</string>
+     </property>
+    </item>
+    <item row="3" column="0">
+     <property name="text">
+      <string>6cp765gc1dfc</string>
+     </property>
+    </item>
+    <item row="3" column="1">
+     <property name="text">
+      <string>Cover</string>
+     </property>
+    </item>
+    <item row="3" column="2">
+     <property name="text">
+      <string>ISGK 5516-2917.010</string>
+     </property>
+    </item>
+    <item row="3" column="3">
+     <property name="text">
+      <string>Крышка насоса</string>
+     </property>
+    </item>
+    <item row="4" column="0">
+     <property name="text">
+      <string>0d6c7ghc1dfc</string>
+     </property>
+    </item>
+    <item row="4" column="1">
+     <property name="text">
+      <string>Tsapfa</string>
+     </property>
+    </item>
+    <item row="4" column="2">
+     <property name="text">
+      <string>650ZH9</string>
+     </property>
+    </item>
+    <item row="4" column="3">
+     <property name="text">
+      <string>Цапфа колёсного редуктора</string>
+     </property>
+    </item>
+    <item row="5" column="0">
+     <property name="text">
+      <string>5cg65gdc1dfc</string>
+     </property>
+    </item>
+    <item row="5" column="1">
+     <property name="text">
+      <string>Gear</string>
+     </property>
+    </item>
+    <item row="5" column="2">
+     <property name="text">
+      <string>1-36.01.01.017.002</string>
+     </property>
+    </item>
+    <item row="5" column="3">
+     <property name="text">
+      <string>Зубчатое колесо</string>
+     </property>
+    </item>
+    <item row="6" column="0">
+     <property name="text">
+      <string>d641fgh5c1dfc</string>
+     </property>
+    </item>
+    <item row="6" column="1">
+     <property name="text">
+      <string>Gear</string>
+     </property>
+    </item>
+    <item row="6" column="2">
+     <property name="text">
+      <string>1-36.01.01.017.005</string>
+     </property>
+    </item>
+    <item row="6" column="3">
+     <property name="text">
+      <string>Зубчатое колесо</string>
+     </property>
+    </item>
+    <item row="7" column="0">
+     <property name="text">
+      <string>5ca4y5egа5р57</string>
+     </property>
+    </item>
+    <item row="7" column="1">
+     <property name="text">
+      <string>Body</string>
+     </property>
+    </item>
+    <item row="7" column="2">
+     <property name="text">
+      <string>79092-1133206-10</string>
+     </property>
+    </item>
+    <item row="7" column="3">
+     <property name="text">
+      <string>Корпус подкачавающего насоса</string>
+     </property>
+    </item>
+    <item row="8" column="0">
+     <property name="text">
+      <string>5ca4ljdr6c1dfc</string>
+     </property>
+    </item>
+    <item row="8" column="1">
+     <property name="text">
+      <string>Motor NEMA 17</string>
+     </property>
+    </item>
+    <item row="8" column="2">
+     <property name="text">
+      <string> JK4595H6</string>
+     </property>
+    </item>
+    <item row="8" column="3">
+     <property name="text">
+      <string>Шаговый двигатель </string>
+     </property>
+    </item>
+    <item row="9" column="0">
+     <property name="text">
+      <string>5cs56jh567ра</string>
+     </property>
+    </item>
+    <item row="9" column="1">
+     <property name="text">
+      <string>Plate</string>
+     </property>
+    </item>
+    <item row="9" column="2">
+     <property name="text">
+      <string>ISGK-1550-4545.001</string>
+     </property>
+    </item>
+    <item row="9" column="3">
+     <property name="text">
+      <string>Фундаментальная плита штампа</string>
      </property>
     </item>
    </widget>
@@ -134,7 +355,7 @@
     <property name="geometry">
      <rect>
       <x>710</x>
-      <y>110</y>
+      <y>30</y>
       <width>101</width>
       <height>41</height>
      </rect>

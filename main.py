@@ -4,13 +4,14 @@ import os
 import threading
 
 from PyQt5 import QtWidgets
-from PyQt5.QtWidgets import QTableWidget, QTableWidgetItem, QFileDialog, QMainWindow, QApplication, QDialog, QComboBox
+from PyQt5.QtCore import QSize
+from PyQt5.QtWidgets import QTableWidget, QTableWidgetItem, QFileDialog, QSizePolicy
 
 import design  # конвертированный файл дизайна
 import dialoginput
 
 
-#from pdf2image import convert_from_path
+from pdf2image import convert_from_path
 import requests
 
 
@@ -31,12 +32,12 @@ class InputDialog(QtWidgets.QDialog, dialoginput.Ui_DialogInput):
         self.tableWidget = tableWidget
         self.id = None
 
-    def show_data(self, name, designation, model_id, draw_id, id=None):
+    def show_data(self, name, designation,information, model_id, draw_id, id=None):
         self.id = id
-
+        print(id)
         self.lineEdit_Name.setText(name)
         self.lineEdit_Designation.setText(designation)
-
+        self.lineEdit_Information.setText(information)
         self.lineEdit_PathToModel.setText(model_id)
         self.lineEdit_PathToDraw.setText(draw_id)
         # self.OKButton.setEnabled(False)
@@ -63,16 +64,17 @@ class InputDialog(QtWidgets.QDialog, dialoginput.Ui_DialogInput):
 
         name = self.lineEdit_Name.text()
         designation = self.lineEdit_Designation.text()
-
+        information=self.lineEdit_Information.text()
         model_id = self.lineEdit_PathToModel.text()
         draw_id = self.lineEdit_PathToDraw.text()
 
-        MainApp.sendTobase(self, name, designation, model_id, draw_id, self.id)
+        MainApp.sendTobase(self, name, designation, information, model_id, draw_id, self.id)
 
         self.lineEdit_Name.clear()
         self.lineEdit_Designation.clear()
         self.lineEdit_PathToDraw.clear()
         self.lineEdit_PathToModel.clear()
+        self.lineEdit_Information.clear()
 
 
 class MainApp(QtWidgets.QMainWindow, design.Ui_MainWindow):
@@ -82,7 +84,7 @@ class MainApp(QtWidgets.QMainWindow, design.Ui_MainWindow):
         super().__init__()
         self.setupUi(self)  # Это нужно для инициализации нашего дизайна
         self.createTable()
-        self.data = requests.get('http://192.168.1.4:5000/show_db').json()
+
 
         # self.deleteSelected.clicked.connect(self.delete_doc)  # Выполнить функцию
         self.showDB()
@@ -102,28 +104,36 @@ class MainApp(QtWidgets.QMainWindow, design.Ui_MainWindow):
         return wrapper
 
     def showDB(self):
+        try:
+            self.data = requests.get('http://192.168.1.4:5000/show_db',timeout= 1).json()
+        except TimeoutError as err:
+            self.statusBar.showMessage("1")
+
         count = len(self.data["cursor"])
         self.tableWidget.setRowCount(count)
 
         for doc, i in zip(self.data["cursor"], range(count)):
+            print(doc)
             print(i)
+            print(str(doc['_id']['$oid']))
             self.tableWidget.setItem(i, 0, QTableWidgetItem(str(doc['_id']['$oid'])))
             self.tableWidget.setItem(i, 1, QTableWidgetItem(str(doc["Name"])))
             self.tableWidget.setItem(i, 2, QTableWidgetItem(str(doc['Designation'])))
-            self.tableWidget.setItem(i, 3, QTableWidgetItem(str(doc['Draw_img'])))
-            self.tableWidget.setItem(i, 4, QTableWidgetItem(str(doc['3d_model'])))
-            self.tableWidget.setItem(i, 5, QTableWidgetItem(str(doc['draw_id_img'])))
-            self.tableWidget.setItem(i, 6, QTableWidgetItem(str(doc['draw_id_img_preview'])))
+            self.tableWidget.setItem(i, 3, QTableWidgetItem( str(doc['information'])))
+            self.tableWidget.setItem(i, 4, QTableWidgetItem(str(doc['Draw_img'])))
+            self.tableWidget.setItem(i, 5, QTableWidgetItem(str(doc['3d_model'])))
+            self.tableWidget.setItem(i, 6, QTableWidgetItem(str(doc['draw_id_img'])))
+            self.tableWidget.setItem(i, 7, QTableWidgetItem(str(doc['draw_id_img_preview'])))
+
 
     def createTable(self):
         # Create table
-        self.tableWidget = self.tableWidget
 
-        self.tableWidget.setColumnCount(9)
+
+        self.tableWidget.setColumnCount(8)
         self.tableWidget.setHorizontalHeaderLabels(
-            ["id", "Name", "Designation", "Draw_img", "3d_model", 'draw_id_img', 'draw_id_img_preview', 'count',
-             'stack'])
-
+            ["id", "Name", "Designation", "Infomation","Draw_img", "3d_model", 'draw_id_img', 'draw_id_img_preview'])
+        self.tableWidget.setColumnWidth(3,500)
         # self.tableWidget.font()
         # self.tableWidget.move(0, 0)
 
@@ -131,13 +141,8 @@ class MainApp(QtWidgets.QMainWindow, design.Ui_MainWindow):
         try:
 
             id = self.tableWidget.selectedItems()[0].text()
-            # print(id)
-            doc = self.coll.find_one({'_id': id})
-            self.fs.delete(doc['3d_model'])
-            self.fs.delete(doc['Draw_img'])
-            self.fs.delete(doc['draw_id_img'])
-            self.fs.delete(doc['draw_id_img_preview'])
-            self.coll.remove()
+            print(id)
+            requests.post('http://192.168.1.4:5000/get_image', json={"id": str(id)})
 
             self.showDB()
         except IndexError as err:
@@ -162,7 +167,7 @@ class MainApp(QtWidgets.QMainWindow, design.Ui_MainWindow):
 
             win.show_data(self.tableWidget.selectedItems()[1].text(), self.tableWidget.selectedItems()[2].text(),
                           self.tableWidget.selectedItems()[3].text(), self.tableWidget.selectedItems()[4].text(),
-                          self.tableWidget.selectedItems()[0].text())
+                          self.tableWidget.selectedItems()[5].text(),self.tableWidget.selectedItems()[0].text())
 
         elif sender.objectName() == "AddButton":
             win.edit()
@@ -171,15 +176,17 @@ class MainApp(QtWidgets.QMainWindow, design.Ui_MainWindow):
         win.exec()
 
     @thread
-    def sendTobase(self, name, designation, path_model, path_draw, id):
+    def sendTobase(self, name, designation, information,path_model, path_draw, id):
+        print(id)
 
         def pdfToimg(pdf_path):
             pages = convert_from_path(pdf_path, 200)
             pages[0].save('/home/oleg/PycharmProjects/QT/tmp/out.jpg', 'JPEG')
             pages = convert_from_path(pdf_path, 10)
             pages[0].save('/home/oleg/PycharmProjects/QT/tmp/out2.jpg', 'JPEG')
-
-        pdfToimg(path_draw)
+            
+        if path_draw.startswith('/'):
+            pdfToimg(path_draw)
 
         data = {'file_model': (os.path.basename(path_model), open(path_model, 'rb'), 'application/octet-stream'),
                 'file_draw': (os.path.basename(path_draw), open(path_draw, 'rb'), 'application/octet-stream'),
@@ -188,11 +195,12 @@ class MainApp(QtWidgets.QMainWindow, design.Ui_MainWindow):
                 'draw_img_preview': (os.path.basename('/home/oleg/PycharmProjects/QT/tmp/out2.jpg'),
                                      open('/home/oleg/PycharmProjects/QT/tmp/out2.jpg', 'rb'),
                                      'application/octet-stream'),
-                'data': ('data', json.dumps(dict({'name': name, 'designation': designation})), 'application/json'),
+                'data': ('data', json.dumps(dict({'name': name, 'designation': designation,'information':information})), 'application/json'),
                 }
-        r = requests.post('http://192.168.1.4:5000/add_part', files=data)
-        if r == 'OK':
-            self.showDB()
+        requests.post('http://192.168.1.4:5000/add_part', files=data)
+
+        self.showDB()
+        self.statusBar.showMessage("New part has been added")
 
 
 def main():
